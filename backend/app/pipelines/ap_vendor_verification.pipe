@@ -1,0 +1,99 @@
+{
+  "id": "ap_vendor_verification",
+  "name": "AP Vendor Verification Pipeline",
+  "description": "Orchestrates AI calling to vendor's TRUSTED phone number for out-of-band fraud verification. Phone number MUST come from vendor DB, never from the suspicious invoice.",
+  "version": "1.0.0",
+  "components": [
+    {
+      "id": "verification_webhook",
+      "provider": "webhook",
+      "config": {
+        "method": "POST",
+        "path": "/pipeline/vendor-verification",
+        "description": "Receives fraud case + trusted vendor contact info"
+      }
+    },
+    {
+      "id": "verification_agent",
+      "provider": "agent",
+      "config": {
+        "model": "gpt-4o-mini",
+        "system_prompt": "You are an AP Sentinel Verification Specialist AI. You will analyze the provided verification objective and trusted vendor contact information to prepare a structured verification call script.\n\nIMPORTANT RULES:\n- You MUST use the phone number from the trusted vendor record ONLY\n- NEVER use any phone number from the suspicious invoice or email\n- Identify yourself as an AI assistant at the start of the call\n- Do NOT authorize payments or make financial decisions\n- Ask only factual confirmation questions\n- Be concise and professional",
+        "user_prompt_template": "Verification Request:\n{{input}}\n\nPrepare the verification call and return JSON:\n{\n  \"call_objective\": \"<string>\",\n  \"trusted_phone\": \"<phone from vendor record only>\",\n  \"vendor_name\": \"<string>\",\n  \"questions\": [\"<q1>\", \"<q2>\", \"<q3>\", \"<q4>\"],\n  \"call_script_intro\": \"<how agent identifies itself>\"\n}"
+      },
+      "connections": {
+        "input": [{"from": "verification_webhook", "field": "body"}]
+      }
+    },
+    {
+      "id": "calling_tool",
+      "provider": "calling",
+      "config": {
+        "provider": "bland_ai",
+        "description": "Makes outbound AI call to vendor's trusted phone number",
+        "call_config": {
+          "task": "You are an AP payment verification assistant. Identify yourself as an AI assistant. Ask the questions provided and record responses accurately.",
+          "record": true,
+          "answered_by_enabled": true,
+          "wait_for_greeting": true,
+          "interruption_threshold": 100
+        },
+        "mock_mode_env": "CALLING_MODE",
+        "mock_responses": {
+          "QUEUED": {"status": "queued", "call_id": "mock-call-{{uuid}}"},
+          "CALLING": {"status": "calling"},
+          "CONNECTED": {"status": "connected"},
+          "COMPLETED": {
+            "status": "completed",
+            "transcript": "AI: Hello, I am an AI assistant calling on behalf of your finance department for a security verification. Did your company request a bank account change? Vendor: No, we did not request any bank account change. AI: Can you confirm your company identity? Vendor: Yes, this is ABC Technologies. AI: Is the new bank account change in the recent invoice legitimate? Vendor: Absolutely not. This is fraudulent. Please hold all payments. AI: Thank you for confirming. We will take appropriate action. Goodbye.",
+            "outcome": "CONTRADICTED"
+          }
+        }
+      },
+      "connections": {
+        "input": [{"from": "verification_agent", "field": "output"}],
+        "control": [{"from": "verification_agent", "invoke": "make_call"}]
+      }
+    },
+    {
+      "id": "call_result_analyzer",
+      "provider": "agent",
+      "config": {
+        "model": "gpt-4o-mini",
+        "system_prompt": "You are a call transcript analyst. Analyze the verification call transcript and determine the outcome. Return structured analysis.",
+        "user_prompt_template": "Call transcript and data:\n{{input}}\n\nAnalyze and return JSON:\n{\n  \"outcome\": \"<CONFIRMED|CONTRADICTED|INCONCLUSIVE|NO_ANSWER>\",\n  \"summary\": \"<1-2 sentence summary>\",\n  \"confidence\": <float 0.0-1.0>,\n  \"key_findings\": [\"<finding 1>\", \"<finding 2>\"]\n}"
+      },
+      "connections": {
+        "input": [{"from": "calling_tool", "field": "call_result"}]
+      }
+    },
+    {
+      "id": "verification_validator",
+      "provider": "transform",
+      "config": {
+        "description": "Validates call analysis output",
+        "required_fields": ["outcome", "summary", "confidence", "key_findings"],
+        "enum_validations": {
+          "outcome": ["CONFIRMED", "CONTRADICTED", "INCONCLUSIVE", "NO_ANSWER"]
+        },
+        "range_validations": {
+          "confidence": {"min": 0.0, "max": 1.0}
+        }
+      },
+      "connections": {
+        "input": [{"from": "call_result_analyzer", "field": "output"}]
+      }
+    },
+    {
+      "id": "verification_response",
+      "provider": "response",
+      "config": {
+        "status": 200,
+        "content_type": "application/json"
+      },
+      "connections": {
+        "input": [{"from": "verification_validator", "field": "validated_output"}]
+      }
+    }
+  ]
+}

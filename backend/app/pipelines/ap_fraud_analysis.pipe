@@ -1,0 +1,57 @@
+{
+  "id": "ap_fraud_analysis",
+  "name": "AP Fraud Analysis Pipeline",
+  "description": "Receives a structured fraud case, runs AI analysis, validates output, returns risk assessment with reasoning.",
+  "version": "1.0.0",
+  "components": [
+    {
+      "id": "webhook_intake",
+      "provider": "webhook",
+      "config": {
+        "method": "POST",
+        "path": "/pipeline/fraud-analysis",
+        "description": "Receives structured fraud case from AP Sentinel backend"
+      }
+    },
+    {
+      "id": "fraud_analyst_agent",
+      "provider": "agent",
+      "config": {
+        "model": "gpt-4o-mini",
+        "system_prompt": "You are an expert AP fraud analyst. You receive structured fraud case data from a deterministic rules engine. Your job is to:\n1. Inspect the fraud indicators already identified\n2. Explain in plain language why the case is suspicious\n3. Identify any additional missing information\n4. Determine if out-of-band (phone) verification is required\n\nCRITICAL RULES:\n- Do NOT invent evidence not present in the input\n- Do NOT override the deterministic risk_score or fraud_flags\n- Only explain and add context to what the rules already found\n- Your reasoning must be factual and grounded in the provided data\n- Output ONLY valid JSON matching the required schema",
+        "user_prompt_template": "Fraud Case Data:\n{{input}}\n\nAnalyze this fraud case and return a JSON object with exactly these fields:\n{\n  \"invoice_id\": \"<string>\",\n  \"risk_level\": \"<LOW|MEDIUM|HIGH|CRITICAL>\",\n  \"reasoning\": [\"<reason 1>\", \"<reason 2>\", ...],\n  \"verification_required\": <true|false>,\n  \"confidence\": <float 0.0-1.0>\n}\n\nDo not include any other text. Return only the JSON."
+      },
+      "connections": {
+        "input": [{"from": "webhook_intake", "field": "body"}]
+      }
+    },
+    {
+      "id": "fraud_output_validator",
+      "provider": "transform",
+      "config": {
+        "description": "Validates AI output against required schema. Rejects malformed outputs.",
+        "required_fields": ["invoice_id", "risk_level", "reasoning", "verification_required", "confidence"],
+        "enum_validations": {
+          "risk_level": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        },
+        "range_validations": {
+          "confidence": {"min": 0.0, "max": 1.0}
+        }
+      },
+      "connections": {
+        "input": [{"from": "fraud_analyst_agent", "field": "output"}]
+      }
+    },
+    {
+      "id": "fraud_response",
+      "provider": "response",
+      "config": {
+        "status": 200,
+        "content_type": "application/json"
+      },
+      "connections": {
+        "input": [{"from": "fraud_output_validator", "field": "validated_output"}]
+      }
+    }
+  ]
+}

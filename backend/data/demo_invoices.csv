@@ -1,0 +1,52 @@
+invoice_id,vendor_id,amount,bank_account,ifsc,approver,description,timestamp
+INV-001,VEN-001,125000,XXXX1234,HDFC0001234,Rajesh Kumar,Monthly IT support services Oct 2024,2024-10-01T10:00:00
+INV-002,VEN-001,98000,XXXX1234,HDFC0001234,Priya Sharma,Software license renewal Q3,2024-10-05T11:30:00
+INV-003,VEN-001,150000,XXXX1234,HDFC0001234,Rajesh Kumar,Hardware maintenance contract,2024-10-08T09:15:00
+INV-004,VEN-001,75000,XXXX1234,HDFC0001234,Priya Sharma,Network infrastructure upgrade,2024-10-12T14:00:00
+INV-005,VEN-001,180000,XXXX1234,HDFC0001234,Rajesh Kumar,Annual support services renewal,2024-10-18T10:30:00
+INV-006,VEN-001,842000,XXXX9988,HDFC0001234,Rajesh Kumar,URGENT: Please update payment to new account XXXX9988. Immediate processing required.,2024-10-24T16:45:00
+INV-007,VEN-002,250000,XXXX5678,ICIC0005678,Anita Singh,Freight services November 2024,2024-10-02T09:00:00
+INV-008,VEN-002,380000,XXXX5678,ICIC0005678,Mohit Verma,Warehousing and distribution Q4,2024-10-07T11:00:00
+INV-009,VEN-002,195000,XXXX5678,ICIC0005678,Anita Singh,Cold storage services October,2024-10-14T13:00:00
+INV-010,VEN-002,420000,XXXX5678,ICIC0005678,Anita Singh,Cross-border shipment handling,2024-10-20T15:00:00
+INV-011,VEN-002,1250000,XXXX4410,SBIN0004410,Anita Singh,Logistics services - kindly update payment to our new bank details as per attached letter,2024-10-23T17:00:00
+INV-012,VEN-003,45000,XXXX9012,AXIS0009012,Sanjay Mehta,Digital marketing campaign October,2024-10-01T08:30:00
+INV-013,VEN-003,62000,XXXX9012,AXIS0009012,Sanjay Mehta,Social media management Q4,2024-10-08T10:00:00
+INV-014,VEN-003,38000,XXXX9012,AXIS0009012,Sanjay Mehta,SEO optimization services,2024-10-14T12:00:00
+INV-015,VEN-003,55000,XXXX9012,AXIS0009012,Sanjay Mehta,Content creation November batch,2024-10-19T09:00:00
+INV-016,VEN-003,450000,XXXX9012,AXIS0009012,John Williams,Marketing campaign - please process immediately board approved,2024-10-22T18:00:00
+INV-017,VEN-004,85000,XXXX3456,SBIN0003456,Deepa Nair,Office supplies batch order September,2024-10-03T08:00:00
+INV-018,VEN-004,42000,XXXX3456,SBIN0003456,Kiran Rao,IT equipment procurement,2024-10-07T10:30:00
+INV-019,VEN-004,115000,XXXX3456,SBIN0003456,Deepa Nair,Server components Q4 refresh,2024-10-13T14:00:00
+INV-020,VEN-004,67000,XXXX3456,SBIN0003456,Kiran Rao,Networking equipment order,2024-10-17T11:00:00
+INV-021,VEN-004,130000,XXXX3456,SBIN0003456,Deepa Nair,Annual hardware maintenance contract,2024-10-22T09:00:00
+INV-017,VEN-004,85000,XXXX3456,SBIN0003456,Deepa Nair,Office supplies batch order September - RESUBMISSION,2024-10-24T15:00:00
+INV-022,VEN-005,185000,XXXX7890,KOTAK0007890,Vikram Joshi,Strategic advisory services Q3,2024-10-04T10:00:00
+INV-023,VEN-005,240000,XXXX7890,KOTAK0007890,Neha Patel,Business process consulting October,2024-10-09T11:00:00
+INV-024,VEN-005,150000,XXXX7890,KOTAK0007890,Vikram Joshi,Management consulting November,2024-10-16T13:00:00
+INV-025,VEN-005,275000,XXXX7890,KOTAK0007890,Neha Patel,Organizational restructuring advisory,2024-10-20T09:30:00
+INV-026,VEN-005,210000,XXXX7890,KOTAK0007890,Vikram Joshi,Digital transformation consulting,2024-10-22T11:00:00
+INV-027,VEN-005,890000,XXXX2233,KOTAK0007890,Neha Patel,CRITICAL: Changed account details - new bank XXXX2233. Please wire transfer immediately overdue payment,2024-10-24T19:00:00
+INV-028,VEN-001,110000,XXXX1234,HDFC0001234,Rajesh Kumar,Cloud infrastructure services,2024-10-11T10:00:00
+INV-029,VEN-002,310000,XXXX5678,ICIC0005678,Mohit Verma,Bulk freight handling Q3,2024-10-15T11:00:00
+INV-030,VEN-003,71000,XXXX9012,AXIS0009012,Sanjay Mehta,Brand consulting services,2024-10-18T13:00:00
+INV-031,VEN-004,93000,XXXX3456,SBIN0003456,Deepa Nair,Printer and copier supplies,2024-10-06T08:00:00
+INV-032,VEN-005,195000,XXXX7890,KOTAK0007890,Vikram Joshi,Risk assessment consulting,2024-10-13T10:00:00
+INV-033,VEN-001,88000,XXXX1234,HDFC0001234,Priya Sharma,Cybersecurity assessment Q4,2024-10-09T09:00:00
+INV-034,VEN-002,445000,XXXX5678,ICIC0005678,Anita Singh,International logistics November,2024-10-17T14:00:00
+INV-035,VEN-003,28000,XXXX9012,AXIS0009012,Sanjay Mehta,Email marketing campaign batch,2024-10-20T10:00:00
+INV-036,VEN-004,122000,XXXX3456,SBIN0003456,Kiran Rao,Data center cooling equipment,2024-10-22T11:00:00
+INV-037,VEN-005,165000,XXXX7890,KOTAK0007890,Neha Patel,Financial analysis consulting,2024-10-21T09:00:00
+INV-038,VEN-001,310000,XXXX1234,HDFC0001234,Rajesh Kumar,Large one-time infrastructure project,2024-10-23T10:00:00
+INV-039,VEN-003,55000,XXXX9012,AXIS0009012,External Auditor,Audit services November 2024,2024-10-22T14:00:00
+INV-040,VEN-004,145000,XXXX3456,SBIN0003456,Deepa Nair,IT refresh - urgent please process by EOD,2024-10-24T17:00:00
+INV-041,VEN-001,95000,XXXX1234,HDFC0001234,Priya Sharma,Data backup services Q4,2024-10-19T11:00:00
+INV-042,VEN-002,285000,XXXX5678,ICIC0005678,Mohit Verma,Reverse logistics services,2024-10-16T09:00:00
+INV-043,VEN-003,49000,XXXX9012,AXIS0009012,Sanjay Mehta,Influencer marketing campaign,2024-10-14T10:00:00
+INV-044,VEN-004,78000,XXXX3456,SBIN0003456,Kiran Rao,Office furniture procurement,2024-10-07T13:00:00
+INV-045,VEN-005,220000,XXXX7890,KOTAK0007890,Vikram Joshi,Compliance consulting services,2024-10-02T09:00:00
+INV-046,VEN-001,145000,XXXX1234,HDFC0001234,Rajesh Kumar,Firewall and security services,2024-10-10T11:00:00
+INV-047,VEN-002,370000,XXXX5678,ICIC0005678,Anita Singh,Supply chain management Q4,2024-10-14T15:00:00
+INV-048,VEN-003,63000,XXXX9012,AXIS0009012,Sanjay Mehta,PR campaign management October,2024-10-19T10:00:00
+INV-049,VEN-004,108000,XXXX3456,SBIN0003456,Deepa Nair,Cloud storage solutions,2024-10-21T12:00:00
+INV-050,VEN-005,255000,XXXX7890,KOTAK0007890,Neha Patel,Strategy and operations consulting,2024-10-23T09:00:00

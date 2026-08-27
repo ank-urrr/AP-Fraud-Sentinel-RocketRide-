@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-on-background antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .font-mono-data {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  /* Timeline connector line */
+  .timeline-line::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 44px;
+    bottom: -24px;
+    width: 2px;
+    background-color: #334155;
+    z-index: 0;
+  }
+  .timeline-item:last-child .timeline-line::before {
+    display: none;
+  }
+
+  /* Scanning animation for verification screen */
+  .scanning-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #bec6e0, transparent);
+    animation: scan 2s linear infinite;
+    opacity: 0.5;
+    box-shadow: 0 0 8px #bec6e0;
+  }
+
+  @keyframes scan {
+    0% { top: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  /* Voice wave bars */
+  .wave-bar {
+    transform-origin: center;
+    animation: waveAnim 1.2s infinite ease-in-out;
+  }
+  @keyframes waveAnim {
+    0%, 100% { transform: scaleY(0.2); opacity: 0.4; }
+    50% { transform: scaleY(1); opacity: 1; }
+  }
+  
+  /* CRT scan effect */
+  .crt-scan {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: rgba(190, 198, 224, 0.06);
+    animation: crtScan 8s linear infinite;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  @keyframes crtScan {
+    0% { top: 0%; }
+    100% { top: 100%; }
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #000f21; }
+  ::-webkit-scrollbar-thumb { background: #45464d; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #909097; }
+}
+
+/* Material Symbols font */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
