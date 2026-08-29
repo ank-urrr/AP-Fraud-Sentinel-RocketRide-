@@ -8,13 +8,13 @@
 @layer base {
   body {
     @apply bg-background text-on-background antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Helvetica Neue', 'Inter', Helvetica, Arial, sans-serif;
   }
 }
 
 @layer components {
   .font-mono-data {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
   
   /* Timeline connector line */
@@ -84,6 +84,16 @@
   ::-webkit-scrollbar-track { background: #000f21; }
   ::-webkit-scrollbar-thumb { background: #45464d; border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: #909097; }
+
+  /* Faint grid texture */
+  .hero-grid {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 80%);
+  }
 }
 
 /* Material Symbols font */

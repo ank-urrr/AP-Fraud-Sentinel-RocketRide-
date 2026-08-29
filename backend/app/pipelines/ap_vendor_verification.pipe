@@ -2,7 +2,7 @@
   "id": "ap_vendor_verification",
   "name": "AP Vendor Verification Pipeline",
   "description": "Orchestrates AI calling to vendor's TRUSTED phone number for out-of-band fraud verification. Phone number MUST come from vendor DB, never from the suspicious invoice.",
-  "version": "1.0.0",
+  "version": 1,
   "components": [
     {
       "id": "verification_webhook",
@@ -22,7 +22,12 @@
         "user_prompt_template": "Verification Request:\n{{input}}\n\nPrepare the verification call and return JSON:\n{\n  \"call_objective\": \"<string>\",\n  \"trusted_phone\": \"<phone from vendor record only>\",\n  \"vendor_name\": \"<string>\",\n  \"questions\": [\"<q1>\", \"<q2>\", \"<q3>\", \"<q4>\"],\n  \"call_script_intro\": \"<how agent identifies itself>\"\n}"
       },
       "connections": {
-        "input": [{"from": "verification_webhook", "field": "body"}]
+        "input": [
+          {
+            "from": "verification_webhook",
+            "field": "body"
+          }
+        ]
       }
     },
     {
@@ -40,9 +45,16 @@
         },
         "mock_mode_env": "CALLING_MODE",
         "mock_responses": {
-          "QUEUED": {"status": "queued", "call_id": "mock-call-{{uuid}}"},
-          "CALLING": {"status": "calling"},
-          "CONNECTED": {"status": "connected"},
+          "QUEUED": {
+            "status": "queued",
+            "call_id": "mock-call-{{uuid}}"
+          },
+          "CALLING": {
+            "status": "calling"
+          },
+          "CONNECTED": {
+            "status": "connected"
+          },
           "COMPLETED": {
             "status": "completed",
             "transcript": "AI: Hello, I am an AI assistant calling on behalf of your finance department for a security verification. Did your company request a bank account change? Vendor: No, we did not request any bank account change. AI: Can you confirm your company identity? Vendor: Yes, this is ABC Technologies. AI: Is the new bank account change in the recent invoice legitimate? Vendor: Absolutely not. This is fraudulent. Please hold all payments. AI: Thank you for confirming. We will take appropriate action. Goodbye.",
@@ -51,8 +63,18 @@
         }
       },
       "connections": {
-        "input": [{"from": "verification_agent", "field": "output"}],
-        "control": [{"from": "verification_agent", "invoke": "make_call"}]
+        "input": [
+          {
+            "from": "verification_agent",
+            "field": "output"
+          }
+        ],
+        "control": [
+          {
+            "from": "verification_agent",
+            "invoke": "make_call"
+          }
+        ]
       }
     },
     {
@@ -64,7 +86,12 @@
         "user_prompt_template": "Call transcript and data:\n{{input}}\n\nAnalyze and return JSON:\n{\n  \"outcome\": \"<CONFIRMED|CONTRADICTED|INCONCLUSIVE|NO_ANSWER>\",\n  \"summary\": \"<1-2 sentence summary>\",\n  \"confidence\": <float 0.0-1.0>,\n  \"key_findings\": [\"<finding 1>\", \"<finding 2>\"]\n}"
       },
       "connections": {
-        "input": [{"from": "calling_tool", "field": "call_result"}]
+        "input": [
+          {
+            "from": "calling_tool",
+            "field": "call_result"
+          }
+        ]
       }
     },
     {
@@ -72,16 +99,34 @@
       "provider": "transform",
       "config": {
         "description": "Validates call analysis output",
-        "required_fields": ["outcome", "summary", "confidence", "key_findings"],
+        "required_fields": [
+          "outcome",
+          "summary",
+          "confidence",
+          "key_findings"
+        ],
         "enum_validations": {
-          "outcome": ["CONFIRMED", "CONTRADICTED", "INCONCLUSIVE", "NO_ANSWER"]
+          "outcome": [
+            "CONFIRMED",
+            "CONTRADICTED",
+            "INCONCLUSIVE",
+            "NO_ANSWER"
+          ]
         },
         "range_validations": {
-          "confidence": {"min": 0.0, "max": 1.0}
+          "confidence": {
+            "min": 0,
+            "max": 1
+          }
         }
       },
       "connections": {
-        "input": [{"from": "call_result_analyzer", "field": "output"}]
+        "input": [
+          {
+            "from": "call_result_analyzer",
+            "field": "output"
+          }
+        ]
       }
     },
     {
@@ -92,8 +137,14 @@
         "content_type": "application/json"
       },
       "connections": {
-        "input": [{"from": "verification_validator", "field": "validated_output"}]
+        "input": [
+          {
+            "from": "verification_validator",
+            "field": "validated_output"
+          }
+        ]
       }
     }
-  ]
+  ],
+  "project_id": "acb1f2c1-34b2-4560-b9ae-d7080510dfe2"
 }

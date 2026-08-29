@@ -148,6 +148,21 @@ def test_batch_ingestion_csv(tmp_path):
     assert data["processed"] == 2
 
 
+def test_batch_rejects_non_invoice_csv(tmp_path):
+    """A generic product/sales export must not be stored as AP invoice data."""
+    csv_file = tmp_path / "not-invoices.csv"
+    csv_file.write_text("first_name,last_name,product_id,qty,amount\nCarmen,Todd,133,9,14.57\n")
+
+    with open(csv_file, "rb") as f:
+        response = client.post(
+            "/invoices/batch",
+            files={"file": ("not-invoices.csv", f, "text/csv")},
+        )
+
+    assert response.status_code == 422
+    assert "Missing required columns" in response.json()["detail"]
+
+
 # ── Fraud Rules Engine ────────────────────────────────────────────────────────
 
 def test_fraud_rules_normal_invoice():

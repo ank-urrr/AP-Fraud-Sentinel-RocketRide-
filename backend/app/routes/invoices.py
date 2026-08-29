@@ -27,6 +27,35 @@ from app.config import settings
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+REQUIRED_INVOICE_FIELDS = (
+    "invoice_id",
+    "vendor_id",
+    "amount",
+    "bank_account",
+    "ifsc",
+)
+
+
+def _validate_invoice_batch(raw_invoices: object) -> list[dict]:
+    """Reject non-invoice datasets before they can be screened or persisted."""
+    if not isinstance(raw_invoices, list) or not raw_invoices:
+        raise HTTPException(400, "Invoice batch must be a non-empty JSON array or CSV with a header row")
+
+    first_row = raw_invoices[0]
+    if not isinstance(first_row, dict):
+        raise HTTPException(422, "Each invoice must be an object with the required invoice fields")
+
+    missing = [field for field in REQUIRED_INVOICE_FIELDS if field not in first_row]
+    if missing:
+        required = ", ".join(REQUIRED_INVOICE_FIELDS)
+        raise HTTPException(
+            422,
+            f"Invalid invoice file. Missing required columns: {', '.join(missing)}. "
+            f"Required columns: {required}.",
+        )
+
+    return raw_invoices
+
 
 def _invoice_to_result(inv: Invoice, db: Session) -> InvoiceResult:
     vendor = db.query(Vendor).filter(Vendor.vendor_id == inv.vendor_id).first()
@@ -217,8 +246,7 @@ async def ingest_batch(
             for inv in DEMO_INVOICES
         ]
 
-    if not raw_invoices:
-        raise HTTPException(400, "No invoices provided")
+    raw_invoices = _validate_invoice_batch(raw_invoices)
 
     results = []
     for inv_data in raw_invoices:

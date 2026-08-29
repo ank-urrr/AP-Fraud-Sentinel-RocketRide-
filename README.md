@@ -114,6 +114,29 @@ Open: http://localhost:5173
 
 ---
 
+## Invoice File Format
+
+Upload a `.csv` or `.json` batch of AP invoices. Export Excel workbooks (`.xlsx`) as CSV before upload.
+
+Every row/object must include:
+
+```text
+invoice_id, vendor_id, amount, bank_account, ifsc
+```
+
+Optional fields are `approver`, `description`, and `timestamp`. Files without the required invoice fields are rejected before records are screened or saved. Generic product, customer, or sales exports are not valid invoice batches.
+
+Example CSV:
+
+```csv
+invoice_id,vendor_id,amount,bank_account,ifsc,approver,description
+INV-001,VEN-001,1250.00,XXXX1234,HDFC0001234,Rajesh Kumar,Monthly services
+```
+
+All monetary values in the UI are displayed in USD.
+
+---
+
 ## Demo (2-Minute Judge Flow)
 
 ### Step 1 — Upload batch
@@ -121,11 +144,11 @@ Navigate to **Invoices** → click **"RUN DEMO — 50 INVOICE BATCH"**
 
 ### Step 2 — See results
 ```
-50 invoices received
-42 cleared
-~5 medium risk
-3 HELD (critical/high)
+51 sample invoice submissions received
+The results panel shows the actual cleared, held, and risk-level totals
 ```
+
+The demo batch deliberately includes a duplicate submission so duplicate-invoice detection can be demonstrated.
 
 ### Step 3 — Click a CRITICAL case
 See:
@@ -212,6 +235,12 @@ Key variables:
 - `DATABASE_URL` — SQLite default, swap for Postgres in production
 
 ---
+
+### Runtime note
+
+`CALLING_MODE` is read when the backend starts. Restart FastAPI after changing `.env`; refreshing the frontend alone does not apply a new calling mode.
+
+Mock mode is the supported demo default. Before using live mode, verify that a compatible RocketRide SDK/runtime and the calling-provider credentials are configured in a non-production environment.
 
 ## Cost Per Run (Approximate)
 

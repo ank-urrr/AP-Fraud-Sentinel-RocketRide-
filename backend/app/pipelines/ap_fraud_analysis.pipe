@@ -2,7 +2,7 @@
   "id": "ap_fraud_analysis",
   "name": "AP Fraud Analysis Pipeline",
   "description": "Receives a structured fraud case, runs AI analysis, validates output, returns risk assessment with reasoning.",
-  "version": "1.0.0",
+  "version": 1,
   "components": [
     {
       "id": "webhook_intake",
@@ -22,7 +22,12 @@
         "user_prompt_template": "Fraud Case Data:\n{{input}}\n\nAnalyze this fraud case and return a JSON object with exactly these fields:\n{\n  \"invoice_id\": \"<string>\",\n  \"risk_level\": \"<LOW|MEDIUM|HIGH|CRITICAL>\",\n  \"reasoning\": [\"<reason 1>\", \"<reason 2>\", ...],\n  \"verification_required\": <true|false>,\n  \"confidence\": <float 0.0-1.0>\n}\n\nDo not include any other text. Return only the JSON."
       },
       "connections": {
-        "input": [{"from": "webhook_intake", "field": "body"}]
+        "input": [
+          {
+            "from": "webhook_intake",
+            "field": "body"
+          }
+        ]
       }
     },
     {
@@ -30,16 +35,35 @@
       "provider": "transform",
       "config": {
         "description": "Validates AI output against required schema. Rejects malformed outputs.",
-        "required_fields": ["invoice_id", "risk_level", "reasoning", "verification_required", "confidence"],
+        "required_fields": [
+          "invoice_id",
+          "risk_level",
+          "reasoning",
+          "verification_required",
+          "confidence"
+        ],
         "enum_validations": {
-          "risk_level": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+          "risk_level": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
         },
         "range_validations": {
-          "confidence": {"min": 0.0, "max": 1.0}
+          "confidence": {
+            "min": 0,
+            "max": 1
+          }
         }
       },
       "connections": {
-        "input": [{"from": "fraud_analyst_agent", "field": "output"}]
+        "input": [
+          {
+            "from": "fraud_analyst_agent",
+            "field": "output"
+          }
+        ]
       }
     },
     {
@@ -50,8 +74,14 @@
         "content_type": "application/json"
       },
       "connections": {
-        "input": [{"from": "fraud_output_validator", "field": "validated_output"}]
+        "input": [
+          {
+            "from": "fraud_output_validator",
+            "field": "validated_output"
+          }
+        ]
       }
     }
-  ]
+  ],
+  "project_id": "b53cde4d-0def-45dd-bddb-8061787182bb"
 }

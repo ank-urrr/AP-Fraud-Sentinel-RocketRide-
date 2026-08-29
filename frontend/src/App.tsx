@@ -51,9 +51,9 @@ export default function App() {
             {/* 404 */}
             <Route path="*" element={
               <div className="flex-grow flex items-center justify-center flex-col gap-4 py-20">
-                <span className="material-symbols-outlined text-on-surface-variant text-6xl">search_off</span>
-                <h1 className="font-headline-lg text-headline-lg text-on-background">Page Not Found</h1>
-                <a href="/" className="font-label-caps text-label-caps text-primary hover:underline">← Back to Dashboard</a>
+                <span className="material-symbols-outlined text-[#9CA3AF] text-6xl">search_off</span>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F5F5F5]">Page Not Found</h1>
+                <a href="/" className="font-mono text-xs font-semibold text-primary hover:underline uppercase tracking-wider">← Back to Dashboard</a>
               </div>
             } />
           </Routes>

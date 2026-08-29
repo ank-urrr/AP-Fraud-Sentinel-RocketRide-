@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listCases } from '../api/client';
 import type { FraudCaseSummary } from '../types';
-import { RiskBadge, StatusPill, Spinner, EmptyState, ErrorState } from '../components/StatusBadges';
+import { RiskBadge, StatusPill, Spinner, EmptyState, ErrorState, formatUsd } from '../components/StatusBadges';
 
 export default function CasesList() {
   const [cases, setCases] = useState<FraudCaseSummary[]>([]);
@@ -28,24 +28,36 @@ export default function CasesList() {
   useEffect(() => { load(); }, [filter]);
 
   return (
-    <main className="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-8 pb-32 md:pb-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-          <h1 className="font-headline-lg text-headline-lg text-on-background">Fraud Cases</h1>
-          <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">
-            {cases.length} case{cases.length !== 1 ? 's' : ''} requiring attention
+    <main className="flex-grow w-full max-w-container-max mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 pb-32 md:pb-8 flex flex-col gap-6">
+      {/* Header & Filter Bar */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-2">
+        <div className="flex flex-col gap-1.5">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.03)] w-fit">
+            <span className="material-symbols-outlined text-[14px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
+              gavel
+            </span>
+            <span className="font-mono text-[11px] font-medium tracking-wide text-[#E5E7EB] uppercase">
+              Fraud Case Management
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#F5F5F5]">
+            Fraud Cases
+          </h1>
+          <p className="text-xs sm:text-sm text-[#9CA3AF]">
+            {cases.length} case{cases.length !== 1 ? 's' : ''} requiring review and human decision governance
           </p>
         </div>
 
-        <div className="flex gap-2 flex-wrap">
+        {/* Segmented Filter Control */}
+        <div className="flex items-center gap-1.5 p-1 bg-[#050c1a] border border-white/10 rounded-full max-w-full overflow-x-auto shadow-inner">
           {['', 'HELD', 'RELEASE_APPROVED', 'REJECTED'].map((s) => (
             <button
               key={s}
               onClick={() => setFilter(s)}
-              className={`font-label-caps text-label-caps px-3 py-1.5 rounded border transition-colors ${
+              className={`font-mono text-[11px] uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all duration-150 whitespace-nowrap ${
                 filter === s
-                  ? 'bg-primary-container border-primary text-on-primary-container'
-                  : 'border-outline-variant text-on-surface-variant hover:border-primary'
+                  ? 'bg-[#F5F5F5] text-[#0A0D14] font-semibold shadow-[0_0_12px_rgba(255,255,255,0.2)]'
+                  : 'bg-transparent text-[#9CA3AF] hover:text-[#F5F5F5] hover:bg-white/[0.04]'
               }`}
             >
               {s || 'ALL'}
@@ -55,7 +67,7 @@ export default function CasesList() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-16"><Spinner size="lg" /></div>
+        <div className="flex justify-center py-20"><Spinner size="lg" /></div>
       ) : error ? (
         <ErrorState error={error} onRetry={load} />
       ) : cases.length === 0 ? (
@@ -65,47 +77,68 @@ export default function CasesList() {
           message="No fraud cases match the current filter. Upload an invoice batch to start screening."
         />
       ) : (
-        <div className="bg-surface-container-low border border-outline-variant rounded-xl overflow-hidden">
-          {/* Header */}
-          <div className="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-outline-variant bg-surface-container-lowest/50 font-label-caps text-label-caps text-on-surface-variant uppercase">
+        <div className="bg-[#050c1a] border border-white/10 rounded-2xl overflow-hidden shadow-xl flex flex-col">
+          {/* Table Header (Desktop) */}
+          <div className="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-white/[0.08] bg-white/[0.02] font-mono text-[11px] text-[#9CA3AF] uppercase tracking-wider">
             <div className="col-span-2">Case ID</div>
-            <div className="col-span-3">Vendor</div>
+            <div className="col-span-3">Vendor / Entity</div>
             <div className="col-span-2">Amount</div>
-            <div className="col-span-2">Risk</div>
+            <div className="col-span-2">Risk Level</div>
             <div className="col-span-2">Status</div>
-            <div className="col-span-1">Score</div>
+            <div className="col-span-1 text-right">Score</div>
           </div>
 
           {cases.map((c, i) => (
             <div
               key={c.case_id}
-              className={`grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 p-4 hover:bg-surface-container-highest/30 transition-colors items-center cursor-pointer ${i < cases.length - 1 ? 'border-b border-outline-variant' : ''}`}
+              className={`grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 p-4 hover:bg-white/[0.03] transition-colors items-center cursor-pointer ${
+                i < cases.length - 1 ? 'border-b border-white/[0.06]' : ''
+              }`}
               onClick={() => navigate(`/cases/${c.case_id}`)}
             >
-              <div className="md:col-span-2">
-                <span className="font-mono-data text-[11px] text-on-surface-variant">{c.case_id}</span>
+              {/* Case ID */}
+              <div className="md:col-span-2 flex items-center justify-between md:justify-start">
+                <span className="md:hidden font-mono text-xs text-[#9CA3AF]">Case ID:</span>
+                <span className="font-mono text-xs text-primary font-medium tracking-wide">{c.case_id}</span>
               </div>
+
+              {/* Vendor & Invoice */}
               <div className="md:col-span-3 flex flex-col">
-                <span className="font-body-md text-body-md text-on-background font-semibold">{c.vendor_name}</span>
-                <span className="font-mono-data text-[11px] text-on-surface-variant">{c.invoice_id}</span>
+                <span className="text-sm font-semibold text-[#F5F5F5]">{c.vendor_name}</span>
+                <span className="font-mono text-[11px] text-[#9CA3AF]">{c.invoice_id}</span>
               </div>
-              <div className="md:col-span-2">
-                <span className="font-mono-data text-[13px] text-on-background">
-                  ₹{c.amount.toLocaleString('en-IN')}
+
+              {/* Amount */}
+              <div className="md:col-span-2 flex md:block justify-between items-center">
+                <span className="md:hidden font-mono text-xs text-[#9CA3AF]">Amount:</span>
+                <span className="font-mono text-sm font-semibold text-[#F5F5F5]">
+                  {formatUsd(c.amount)}
                 </span>
               </div>
-              <div className="md:col-span-2">
+
+              {/* Risk Level */}
+              <div className="md:col-span-2 flex md:block justify-between items-center">
+                <span className="md:hidden font-mono text-xs text-[#9CA3AF]">Risk Level:</span>
                 <RiskBadge level={c.risk_level} size="sm" />
               </div>
-              <div className="md:col-span-2">
+
+              {/* Status */}
+              <div className="md:col-span-2 flex md:block justify-between items-center">
+                <span className="md:hidden font-mono text-xs text-[#9CA3AF]">Status:</span>
                 <StatusPill status={c.payment_status} />
               </div>
-              <div className="md:col-span-1">
-                <span className={`font-mono-data text-[13px] font-bold ${
-                  c.risk_score >= 80 ? 'text-error' :
-                  c.risk_score >= 60 ? 'text-orange-400' :
-                  c.risk_score >= 30 ? 'text-tertiary' : 'text-green-400'
-                }`}>{c.risk_score}</span>
+
+              {/* Score */}
+              <div className="md:col-span-1 flex md:justify-end justify-between items-center">
+                <span className="md:hidden font-mono text-xs text-[#9CA3AF]">Risk Score:</span>
+                <span className={`inline-flex items-center justify-center font-mono text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+                  c.risk_score >= 80 ? 'border-red-500/30 bg-red-500/10 text-red-400' :
+                  c.risk_score >= 60 ? 'border-orange-500/30 bg-orange-500/10 text-orange-400' :
+                  c.risk_score >= 30 ? 'border-amber-500/30 bg-amber-500/10 text-amber-300' :
+                  'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                }`}>
+                  {c.risk_score}
+                </span>
               </div>
             </div>
           ))}

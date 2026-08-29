@@ -102,7 +102,7 @@ export default function VerificationCall() {
       <div className="flex-grow flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Spinner size="lg" />
-          <p className="font-label-caps text-label-caps text-on-surface-variant">INITIATING VERIFICATION...</p>
+          <p className="font-mono text-xs uppercase tracking-wider text-[#9CA3AF]">INITIATING VERIFICATION...</p>
         </div>
       </div>
     );
@@ -111,21 +111,21 @@ export default function VerificationCall() {
   if (phase === 'failed' && error) {
     return (
       <div className="flex-grow flex items-center justify-center px-4">
-        <div className="w-full max-w-2xl bg-surface-container rounded-xl border border-error/30 p-8 flex flex-col items-center text-center">
-          <div className="w-20 h-20 rounded-full bg-error-container/20 flex items-center justify-center mb-6 border border-error/50">
-            <span className="material-symbols-outlined text-error text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+        <div className="w-full max-w-2xl bg-[#050c1a] rounded-2xl border border-red-500/30 p-8 flex flex-col items-center text-center shadow-xl">
+          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-6 border border-red-500/30">
+            <span className="material-symbols-outlined text-red-400 text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
           </div>
-          <h1 className="font-headline-lg text-headline-lg text-on-background mb-4">Verification Incomplete</h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-lg mb-8">{error}</p>
-          <div className="flex flex-col sm:flex-row gap-4 w-full">
-            <button onClick={runVerification} className="flex-1 py-3 px-6 rounded bg-surface-container-high border border-outline text-on-background font-label-caps text-label-caps flex items-center justify-center gap-2 hover:bg-surface-variant transition-colors">
-              <span className="material-symbols-outlined text-lg">refresh</span>Retry Call
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F5F5F5] mb-2">Verification Incomplete</h1>
+          <p className="text-sm text-[#9CA3AF] max-w-lg mb-8">{error}</p>
+          <div className="flex flex-col sm:flex-row gap-3 w-full">
+            <button onClick={runVerification} className="flex-1 py-3 px-6 rounded-full bg-white/[0.04] border border-white/15 text-[#E5E7EB] font-mono text-xs font-semibold tracking-wider flex items-center justify-center gap-2 hover:bg-white/[0.08] transition-all">
+              <span className="material-symbols-outlined text-base">refresh</span>Retry Call
             </button>
-            <button onClick={() => navigate(`/cases/${caseId}`)} className="flex-1 py-3 px-6 rounded bg-error-container text-on-error-container font-label-caps text-label-caps flex items-center justify-center gap-2 hover:opacity-90">
-              <span className="material-symbols-outlined text-lg">back_hand</span>Keep on Hold
+            <button onClick={() => navigate(`/cases/${caseId}`)} className="flex-1 py-3 px-6 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 font-mono text-xs font-semibold tracking-wider flex items-center justify-center gap-2 hover:bg-red-500/20 transition-all">
+              <span className="material-symbols-outlined text-base">back_hand</span>Keep on Hold
             </button>
-            <button onClick={() => navigate(`/invoices/${caseId}/decide`)} className="flex-1 py-3 px-6 rounded bg-primary text-on-primary font-label-caps text-label-caps flex items-center justify-center gap-2 hover:opacity-90">
-              <span className="material-symbols-outlined text-lg">assignment_ind</span>Human Review
+            <button onClick={() => navigate(`/invoices/${caseId}/decide`)} className="flex-1 py-3 px-6 rounded-full bg-[#F5F5F5] text-[#0A0D14] font-mono text-xs font-bold tracking-wider flex items-center justify-center gap-2 hover:bg-white transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+              <span className="material-symbols-outlined text-base">assignment_ind</span>Human Review
             </button>
           </div>
         </div>
@@ -138,43 +138,43 @@ export default function VerificationCall() {
   return (
     <div className="flex-grow flex items-center justify-center overflow-hidden relative px-4 py-8">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-[#030914]/80 backdrop-blur-sm" />
 
       <main className="relative z-10 w-full max-w-[800px]">
-        <div className="bg-surface-container border border-outline-variant rounded-xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden flex flex-col relative">
+        <div className="bg-[#050c1a] border border-white/10 rounded-2xl shadow-[0_12px_48px_rgba(0,0,0,0.6)] overflow-hidden flex flex-col relative">
           {/* Scanning line during call */}
           {phase === 'calling' && <div className="scanning-line" />}
 
           {/* Header */}
-          <header className="bg-surface-container-high border-b border-outline-variant px-gutter py-4 flex items-center justify-between">
+          <header className="bg-white/[0.02] border-b border-white/[0.08] px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-primary text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>shield_person</span>
-              <h1 className="font-headline-md text-headline-md text-on-background">Verifying via Trusted Channel</h1>
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-[#F5F5F5]">Verifying via Trusted Channel</h1>
             </div>
-            <div className="font-label-caps text-label-caps text-on-surface-variant flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full inline-block ${phase === 'calling' ? 'bg-primary animate-pulse' : phase === 'completed' ? 'bg-green-500' : 'bg-error'}`} />
+            <div className="font-mono text-xs text-[#9CA3AF] flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full inline-block ${phase === 'calling' ? 'bg-primary animate-pulse' : phase === 'completed' ? 'bg-emerald-400' : 'bg-red-400'}`} />
               <span>{phase === 'calling' ? 'OUT-OF-BAND SECURE' : phase === 'completed' ? 'SESSION CLOSED' : 'ERROR'}</span>
             </div>
           </header>
 
-          <div className="p-gutter flex flex-col gap-6">
+          <div className="p-6 flex flex-col gap-5">
             {/* Vendor info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-surface-container-low border border-outline-variant rounded-lg p-4 flex flex-col gap-1">
-                <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Target Vendor</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4 flex flex-col gap-1">
+                <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#9CA3AF]">Target Vendor</span>
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-on-surface-variant">store</span>
-                  <span className="font-body-lg text-body-lg text-on-background font-medium">{caseData?.vendor_name}</span>
+                  <span className="material-symbols-outlined text-[#9CA3AF] text-base">store</span>
+                  <span className="text-sm sm:text-base font-semibold text-[#F5F5F5]">{caseData?.vendor_name}</span>
                 </div>
               </div>
-              <div className="bg-surface-container-low border border-outline-variant rounded-lg p-4 flex flex-col gap-1 relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-surface-variant px-2 py-1 rounded-bl-lg border-l border-b border-outline-variant">
-                  <span className="font-label-caps text-label-caps text-primary text-[10px]">TRUSTED RECORD</span>
+              <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4 flex flex-col gap-1 relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-white/[0.04] px-2.5 py-0.5 rounded-bl-lg border-l border-b border-white/10">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-medium">TRUSTED RECORD</span>
                 </div>
-                <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Contact Number</span>
+                <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#9CA3AF]">Contact Number</span>
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-on-surface-variant">call</span>
-                  <span className="font-mono-data text-[14px] text-on-background">
+                  <span className="material-symbols-outlined text-[#9CA3AF] text-base">call</span>
+                  <span className="font-mono text-xs sm:text-sm font-semibold text-[#F5F5F5]">
                     {call?.phone_number?.replace(/(\d{2})\d+(\d{2})/, '$1****$2') || '●●●● ●●●●●●'}
                   </span>
                 </div>
@@ -183,20 +183,20 @@ export default function VerificationCall() {
 
             {/* Mock badge */}
             {callingMode === 'mock' && (
-              <div className="flex items-center gap-2 bg-tertiary-container/20 border border-tertiary px-3 py-2 rounded-lg">
-                <span className="material-symbols-outlined text-tertiary text-sm">science</span>
-                <span className="font-label-caps text-label-caps text-tertiary">MOCK VERIFICATION — No real phone call made</span>
+              <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3 py-2 rounded-xl">
+                <span className="material-symbols-outlined text-amber-300 text-sm">science</span>
+                <span className="font-mono text-[11px] uppercase tracking-wider text-amber-300">MOCK VERIFICATION — No real phone call made</span>
               </div>
             )}
 
             {/* Calling animation / result */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-lg h-48 flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="bg-black/30 border border-white/10 rounded-xl h-48 flex flex-col items-center justify-center relative overflow-hidden">
               {phase === 'calling' ? (
                 <div className="flex flex-col items-center justify-center w-full h-full">
-                  <div className="font-label-caps text-label-caps text-primary mb-4 tracking-widest animate-pulse">{statusText}</div>
+                  <div className="font-mono text-xs uppercase tracking-widest text-primary mb-4 animate-pulse">{statusText}</div>
                   <svg className="overflow-visible" height="60" viewBox="0 0 200 60" width="200">
                     <defs>
-                      <linearGradient id="waveColor" x1="0%" x2="100%" y1="0%" y2="0%">
+                      <linearGradient id="waveColor" x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" stopColor="#2a3a4f" />
                         <stop offset="50%" stopColor="#bec6e0" />
                         <stop offset="100%" stopColor="#2a3a4f" />
@@ -211,31 +211,31 @@ export default function VerificationCall() {
                 </div>
               ) : phase === 'completed' && outcome ? (
                 <div className="flex flex-col items-center justify-center w-full h-full text-center px-6">
-                  <div className={`inline-flex items-center gap-2 bg-surface-container-high ${outcome.borderColor} border text-sm px-3 py-1 rounded-full mb-3 ${outcome.color}`}>
-                    <span className="material-symbols-outlined text-[16px]">{outcome.icon}</span>
-                    <span className="font-label-caps text-label-caps font-bold">{outcome.label}</span>
+                  <div className={`inline-flex items-center gap-2 bg-white/[0.04] ${outcome.borderColor} border text-xs px-3 py-1 rounded-full mb-3 ${outcome.color}`}>
+                    <span className="material-symbols-outlined text-[15px]">{outcome.icon}</span>
+                    <span className="font-mono font-bold uppercase tracking-wider">{outcome.label}</span>
                   </div>
-                  <h2 className="font-headline-md text-headline-md text-on-background mb-1">Verification Completed</h2>
-                  <p className="font-body-sm text-body-sm text-on-surface-variant">The out-of-band channel has closed with a definitive outcome.</p>
+                  <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#F5F5F5] mb-1">Verification Completed</h2>
+                  <p className="text-xs sm:text-sm text-[#9CA3AF]">The out-of-band channel has closed with a definitive outcome.</p>
                 </div>
               ) : null}
             </div>
 
             {/* Analysis panel — shown after completion */}
             {phase === 'completed' && call && (
-              <div className={`bg-surface-container-low border-l-4 ${outcome?.borderColor || 'border-outline'} p-4 rounded-r-lg flex flex-col md:flex-row gap-4 items-start md:items-center justify-between`}>
+              <div className={`bg-white/[0.02] border-l-4 ${outcome?.borderColor || 'border-white/20'} p-4 rounded-r-xl flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border border-white/10`}>
                 <div className="flex flex-col gap-1 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-primary text-[18px]">psychology</span>
-                    <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">AI Summary</span>
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-[#9CA3AF]">AI Summary</span>
                   </div>
-                  <p className="font-body-md text-body-md text-on-background leading-relaxed">"{call.ai_summary}"</p>
+                  <p className="text-xs sm:text-sm text-[#F5F5F5] leading-relaxed">"{call.ai_summary}"</p>
                 </div>
-                <div className="flex flex-col items-center justify-center bg-surface-container border border-outline-variant rounded-lg p-3 min-w-[100px]">
-                  <span className="font-label-caps text-label-caps text-on-surface-variant mb-1">CONFIDENCE</span>
-                  <div className={`font-display-lg text-display-lg ${outcome?.color || 'text-on-background'} flex items-baseline`}>
+                <div className="flex flex-col items-center justify-center bg-white/[0.03] border border-white/10 rounded-xl p-3 min-w-[100px]">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-[#9CA3AF] mb-1">CONFIDENCE</span>
+                  <div className={`text-2xl sm:text-3xl font-mono font-bold ${outcome?.color || 'text-[#F5F5F5]'} flex items-baseline`}>
                     {call.confidence ? Math.round(call.confidence * 100) : '--'}
-                    <span className="font-headline-md text-headline-md text-on-surface-variant">%</span>
+                    <span className="text-sm text-[#9CA3AF] font-normal">%</span>
                   </div>
                 </div>
               </div>
@@ -243,12 +243,12 @@ export default function VerificationCall() {
 
             {/* Transcript */}
             {phase === 'completed' && call?.transcript && (
-              <details className="bg-surface-container-lowest border border-outline-variant rounded-lg">
-                <summary className="p-4 font-label-caps text-label-caps text-on-surface-variant cursor-pointer hover:text-primary transition-colors">
+              <details className="bg-black/20 border border-white/10 rounded-xl">
+                <summary className="p-4 font-mono text-xs font-semibold text-[#9CA3AF] cursor-pointer hover:text-[#F5F5F5] transition-colors">
                   CALL TRANSCRIPT ▼
                 </summary>
-                <div className="p-4 pt-0 border-t border-outline-variant">
-                  <pre className="font-mono-data text-[12px] text-on-surface-variant whitespace-pre-wrap leading-relaxed">
+                <div className="p-4 pt-0 border-t border-white/10">
+                  <pre className="font-mono text-xs text-[#9CA3AF] whitespace-pre-wrap leading-relaxed">
                     {call.transcript}
                   </pre>
                 </div>
@@ -257,28 +257,28 @@ export default function VerificationCall() {
           </div>
 
           {/* Footer action */}
-          <footer className="bg-surface-container-high border-t border-outline-variant p-gutter flex justify-end gap-3">
+          <footer className="bg-white/[0.02] border-t border-white/[0.08] p-6 flex flex-col sm:flex-row justify-end gap-3">
             {phase === 'completed' ? (
               <>
                 <button
                   onClick={() => navigate(`/audit/${caseId}`)}
-                  className="bg-surface-container-highest border border-outline-variant text-on-surface-variant font-label-caps text-label-caps px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-surface-bright hover:text-on-background transition-all"
+                  className="px-6 py-3 rounded-full bg-white/[0.03] border border-white/15 text-[#E5E7EB] font-mono text-xs font-semibold tracking-wider hover:bg-white/[0.08] hover:border-white/25 transition-all flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <span className="material-symbols-outlined text-[18px]">history</span>
-                  AUDIT TRAIL
+                  <span>AUDIT TRAIL</span>
                 </button>
                 <button
                   onClick={() => navigate(`/invoices/${caseId}/decide`)}
-                  className="bg-primary-container border border-primary text-on-primary-container font-label-caps text-label-caps px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-primary hover:text-on-primary cursor-pointer transition-all"
+                  className="px-6 py-3 rounded-full bg-[#F5F5F5] text-[#0A0D14] font-mono text-xs font-bold tracking-wider hover:bg-white transition-all shadow-[0_0_16px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   <span className="material-symbols-outlined text-[18px]">find_in_page</span>
-                  REVIEW EVIDENCE &amp; DECIDE
+                  <span>REVIEW EVIDENCE &amp; DECIDE</span>
                 </button>
               </>
             ) : (
-              <button disabled className="bg-surface-variant text-on-surface-variant border border-outline-variant font-label-caps text-label-caps px-6 py-3 rounded-lg flex items-center gap-2 cursor-not-allowed">
+              <button disabled className="px-6 py-3 rounded-full bg-white/[0.04] text-[#9CA3AF] border border-white/10 font-mono text-xs font-medium tracking-wider flex items-center justify-center gap-2 cursor-not-allowed min-h-[44px]">
                 <span className="material-symbols-outlined text-[18px]">lock_clock</span>
-                AWAITING RESOLUTION...
+                <span>AWAITING RESOLUTION...</span>
               </button>
             )}
           </footer>

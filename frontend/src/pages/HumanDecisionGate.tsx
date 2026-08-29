@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCase, approveCase, rejectCase } from '../api/client';
 import type { FraudCaseDetail } from '../types';
-import { Spinner, ErrorState } from '../components/StatusBadges';
+import { Spinner, ErrorState, formatUsd } from '../components/StatusBadges';
 
 export default function HumanDecisionGate() {
   const { caseId } = useParams<{ caseId: string }>();
@@ -69,74 +69,83 @@ export default function HumanDecisionGate() {
   const isAlreadyDecided = ['RELEASE_APPROVED', 'REJECTED'].includes(c.payment_status);
 
   return (
-    <main className="flex-1 flex flex-col md:flex-row w-full max-w-[1440px] mx-auto overflow-hidden">
-      <div className="crt-scan" />
-
+    <main className="flex-1 flex flex-col md:flex-row w-full max-w-container-max mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 pb-32 md:pb-8 gap-6">
       {/* Left: Evidence */}
-      <section className="flex-1 overflow-y-auto p-margin-mobile md:p-gutter flex flex-col gap-6 pb-32 md:pb-gutter">
+      <section className="flex-1 flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           {!isAlreadyDecided && (
-            <div className="inline-flex items-center gap-2 text-error font-label-caps text-label-caps">
-              <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
-              {c.risk_level} FRAUD ALERT
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-400 font-mono text-[11px] font-semibold uppercase tracking-wider w-fit">
+              <span className="material-symbols-outlined text-[13px]" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+              <span>{c.risk_level} FRAUD ALERT</span>
             </div>
           )}
-          <h2 className="font-display-lg text-display-lg text-on-background">{c.vendor_name}</h2>
-          <p className="font-mono-data text-[12px] text-on-surface-variant">CASE ID: {c.case_id}</p>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#F5F5F5]">{c.vendor_name}</h2>
+          <p className="font-mono text-xs text-[#9CA3AF]">
+            CASE ID: <span className="text-primary font-medium tracking-wider">{c.case_id}</span>
+          </p>
         </div>
 
         {/* Bento evidence */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
           {/* Risk */}
-          <div className="bg-surface-container-low/70 backdrop-blur-sm border border-outline-variant/40 p-6 rounded-xl flex flex-col gap-4">
-            <h3 className="font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant pb-2">RISK ASSESSMENT</h3>
-            <div className="flex justify-between items-end">
-              <div>
-                <span className="font-body-sm text-body-sm text-on-surface-variant">AI Confidence</span>
-                <p className={`font-headline-lg text-headline-lg ${c.risk_score >= 80 ? 'text-error' : 'text-tertiary'}`}>
+          <div className="bg-[#050c1a] border border-white/10 p-6 rounded-2xl flex flex-col gap-4 shadow-lg">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[#E5E7EB]">RISK ASSESSMENT</h3>
+              <span className="material-symbols-outlined text-sm text-[#9CA3AF]">analytics</span>
+            </div>
+            <div className="flex justify-between items-end pt-1">
+              <div className="flex flex-col gap-1">
+                <span className="text-xs text-[#9CA3AF]">AI Confidence / Severity</span>
+                <p className={`text-3xl sm:text-4xl font-mono font-bold tracking-tight ${c.risk_score >= 80 ? 'text-red-400' : 'text-amber-300'}`}>
                   {c.ai_confidence ? `${Math.round(c.ai_confidence * 100)}%` : `${c.risk_score}/100`}
                 </p>
               </div>
-              <div className={`${c.risk_score >= 80 ? 'bg-error-container/20 border-error text-error' : 'bg-tertiary-container/20 border-tertiary text-tertiary'} border px-3 py-1 rounded font-label-caps text-label-caps flex items-center gap-2`}>
+              <div className={`${c.risk_score >= 80 ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-amber-500/10 border-amber-500/30 text-amber-300'} border px-3 py-1 rounded-full font-mono text-xs font-semibold flex items-center gap-1.5`}>
                 <span className="material-symbols-outlined text-sm">block</span>
-                {c.risk_level}
+                <span>{c.risk_level}</span>
               </div>
             </div>
           </div>
 
           {/* Verification call result */}
           {call && (
-            <div className="bg-surface-container-low/70 backdrop-blur-sm border border-outline-variant/40 p-6 rounded-xl flex flex-col gap-4">
-              <h3 className="font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant pb-2">VERIFICATION CALL</h3>
-              <div className="flex flex-col gap-2">
-                <div className={`flex items-center gap-2 ${call.outcome === 'CONTRADICTED' ? 'text-error' : call.outcome === 'CONFIRMED' ? 'text-green-400' : 'text-tertiary'}`}>
-                  <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>record_voice_over</span>
-                  <span className="font-headline-md text-headline-md">{call.outcome}</span>
+            <div className="bg-[#050c1a] border border-white/10 p-6 rounded-2xl flex flex-col gap-4 shadow-lg">
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+                <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[#E5E7EB]">VERIFICATION CALL</h3>
+                <span className="material-symbols-outlined text-sm text-primary">phone_in_talk</span>
+              </div>
+              <div className="flex flex-col gap-2 pt-1">
+                <div className={`flex items-center gap-2 ${call.outcome === 'CONTRADICTED' ? 'text-red-400' : call.outcome === 'CONFIRMED' ? 'text-emerald-400' : 'text-amber-300'}`}>
+                  <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>record_voice_over</span>
+                  <span className="text-lg font-mono font-bold uppercase">{call.outcome}</span>
                 </div>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">{call.ai_summary}</p>
+                <p className="text-xs sm:text-sm text-[#9CA3AF] leading-relaxed">{call.ai_summary}</p>
               </div>
             </div>
           )}
 
           {/* Transaction details */}
-          <div className="bg-surface-container-low/70 backdrop-blur-sm border border-outline-variant/40 p-6 rounded-xl flex flex-col gap-4 md:col-span-2">
-            <h3 className="font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant pb-2">TRANSACTION DETAILS</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-[#050c1a] border border-white/10 p-6 rounded-2xl flex flex-col gap-4 shadow-lg md:col-span-2">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <h3 className="font-mono text-xs font-semibold uppercase tracking-wider text-[#E5E7EB]">TRANSACTION DETAILS</h3>
+              <span className="material-symbols-outlined text-sm text-[#9CA3AF]">receipt</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-1">
               <div className="flex flex-col gap-1">
-                <span className="font-label-caps text-label-caps text-on-surface-variant">AMOUNT</span>
-                <span className="font-mono-data text-[14px] text-on-background">₹{c.amount.toLocaleString('en-IN')}</span>
+                <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#9CA3AF]">AMOUNT</span>
+                <span className="font-mono text-sm sm:text-base font-semibold text-[#F5F5F5]">{formatUsd(c.amount)}</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="font-label-caps text-label-caps text-on-surface-variant">INVOICE ID</span>
-                <span className="font-mono-data text-[12px] text-on-background">{c.invoice_id}</span>
+                <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#9CA3AF]">INVOICE ID</span>
+                <span className="font-mono text-xs sm:text-sm text-[#F5F5F5]">{c.invoice_id}</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="font-label-caps text-label-caps text-on-surface-variant">KNOWN ROUTING</span>
-                <span className="font-mono-data text-[14px] text-on-background">From vendor record</span>
+                <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#9CA3AF]">KNOWN ROUTING</span>
+                <span className="font-mono text-xs sm:text-sm text-[#F5F5F5]">From vendor record</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="font-label-caps text-label-caps text-error">REQUESTED ROUTING</span>
-                <span className="font-mono-data text-[14px] text-error">{c.bank_account}</span>
+                <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-red-400 font-semibold">REQUESTED ROUTING</span>
+                <span className="font-mono text-xs sm:text-sm font-semibold text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded w-fit">{c.bank_account}</span>
               </div>
             </div>
           </div>
@@ -145,112 +154,119 @@ export default function HumanDecisionGate() {
         {/* Fraud flags */}
         <div className="flex flex-wrap gap-2">
           {c.fraud_flags.map((f, i) => (
-            <span key={i} className="font-label-caps text-label-caps text-[10px] border border-error/50 bg-error-container/10 text-error px-2 py-1 rounded">
-              {f.split(':')[0]}
+            <span key={i} className="font-mono text-xs font-semibold border border-red-500/30 bg-red-500/10 text-red-400 px-3 py-1 rounded-full flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[13px]" style={{ fontVariationSettings: "'FILL' 1" }}>flag</span>
+              <span>{f.split(':')[0]}</span>
             </span>
           ))}
         </div>
 
-        <div className="p-4 border border-outline-variant rounded-lg bg-surface-container-low flex items-start gap-3">
-          <span className="material-symbols-outlined text-primary mt-0.5">info</span>
-          <p className="font-body-sm text-body-sm text-on-surface-variant">
+        <div className="p-4 sm:p-5 border border-white/10 rounded-2xl bg-white/[0.02] flex items-start gap-3 shadow-sm">
+          <span className="material-symbols-outlined text-primary text-lg mt-0.5">info</span>
+          <p className="text-xs sm:text-sm text-[#9CA3AF] leading-relaxed">
             The final payment release always requires a human. Review evidence thoroughly before overriding AI recommendation.
           </p>
         </div>
       </section>
 
       {/* Right: Decision Gateway */}
-      <section className="w-full md:w-96 bg-surface-container-low border-l border-outline-variant p-margin-mobile md:p-gutter flex flex-col justify-between fixed md:relative bottom-0 left-0 z-40 rounded-t-xl md:rounded-none shadow-[0_-8px_32px_rgba(0,0,0,0.5)] md:shadow-none">
+      <section className="w-full md:w-96 bg-[#050c1a] border border-white/10 p-6 rounded-2xl flex flex-col justify-between shadow-xl">
         {isAlreadyDecided ? (
-          <div className="flex flex-col gap-4">
-            <h2 className="font-headline-md text-headline-md text-on-background border-b border-outline-variant pb-4">Decision Recorded</h2>
-            <div className={`p-4 rounded-lg border flex items-center gap-3 ${
-              c.payment_status === 'RELEASE_APPROVED' ? 'bg-green-500/10 border-green-500 text-green-400' : 'bg-error-container/20 border-error text-error'
+          <div className="flex flex-col gap-5">
+            <h2 className="text-lg font-bold text-[#F5F5F5] border-b border-white/[0.08] pb-4">Decision Recorded</h2>
+            <div className={`p-4 rounded-xl border flex items-center gap-3 ${
+              c.payment_status === 'RELEASE_APPROVED' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'
             }`}>
-              <span className="material-symbols-outlined">{c.payment_status === 'RELEASE_APPROVED' ? 'task_alt' : 'cancel'}</span>
-              <span className="font-body-md text-body-md font-bold">
+              <span className="material-symbols-outlined text-xl">{c.payment_status === 'RELEASE_APPROVED' ? 'task_alt' : 'cancel'}</span>
+              <span className="font-mono text-sm font-bold uppercase tracking-wider">
                 {c.payment_status === 'RELEASE_APPROVED' ? 'PAYMENT APPROVED' : 'PAYMENT REJECTED'}
               </span>
             </div>
             {c.latest_decision && (
-              <div className="flex flex-col gap-1 font-body-sm text-body-sm text-on-surface-variant">
-                <span>Reviewed by: <strong className="text-on-background">{c.latest_decision.reviewer}</strong></span>
-                {c.latest_decision.notes && <span>Notes: {c.latest_decision.notes}</span>}
+              <div className="flex flex-col gap-1.5 text-xs text-[#9CA3AF]">
+                <span>Reviewed by: <strong className="text-[#F5F5F5] font-mono">{c.latest_decision.reviewer}</strong></span>
+                {c.latest_decision.notes && <span>Notes: <span className="text-[#E5E7EB]">{c.latest_decision.notes}</span></span>}
               </div>
             )}
-            <button onClick={() => navigate(`/audit/${caseId}`)} className="w-full bg-surface-container-high border border-outline text-on-background font-label-caps text-label-caps py-3 rounded flex justify-center items-center gap-2 hover:bg-surface-bright transition-colors">
-              <span className="material-symbols-outlined text-sm">history</span>VIEW AUDIT TRAIL
+            <button
+              onClick={() => navigate(`/audit/${caseId}`)}
+              className="w-full bg-white/[0.03] border border-white/15 text-[#E5E7EB] hover:bg-white/[0.08] font-mono text-xs font-semibold tracking-wider py-3 rounded-full flex justify-center items-center gap-2 transition-all min-h-[44px]"
+            >
+              <span className="material-symbols-outlined text-sm">history</span>
+              <span>VIEW AUDIT TRAIL</span>
             </button>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            <div className="hidden md:flex flex-col gap-6 mb-4">
-              <h2 className="font-headline-md text-headline-md text-on-background border-b border-outline-variant pb-4">Decision Gateway</h2>
+            <div className="flex flex-col gap-4 mb-2">
+              <h2 className="text-lg font-bold text-[#F5F5F5] border-b border-white/[0.08] pb-3">Decision Gateway</h2>
               {c.ai_reasoning && c.ai_reasoning.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <span className="font-label-caps text-label-caps text-on-surface-variant">AI RECOMMENDATION</span>
-                  <div className="p-4 bg-error-container/20 border border-error rounded-lg flex items-center gap-3">
-                    <span className="material-symbols-outlined text-error">gavel</span>
-                    <span className="font-body-md text-body-md text-error font-bold">REJECT AND BLOCK PAYMENT</span>
+                <div className="flex flex-col gap-1.5">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-[#9CA3AF]">AI RECOMMENDATION</span>
+                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center gap-2.5 text-red-400 font-mono text-xs font-bold">
+                    <span className="material-symbols-outlined text-base">gavel</span>
+                    <span>REJECT AND BLOCK PAYMENT</span>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Reviewer input */}
-            <div className="flex flex-col gap-2">
-              <label className="font-label-caps text-label-caps text-on-surface-variant">REVIEWER NAME *</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="font-mono text-[10px] uppercase tracking-wider text-[#9CA3AF]">REVIEWER NAME *</label>
               <input
                 type="text"
                 value={reviewer}
                 onChange={(e) => setReviewer(e.target.value)}
                 placeholder="Finance Director..."
-                className="bg-background border border-outline-variant text-on-background font-body-sm text-body-sm px-3 py-2 rounded focus:border-primary outline-none transition-colors"
+                className="bg-black/30 border border-white/15 text-[#F5F5F5] font-mono text-xs px-3.5 py-2.5 rounded-xl focus:border-primary outline-none transition-colors"
               />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="font-label-caps text-label-caps text-on-surface-variant">DECISION NOTES</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="font-mono text-[10px] uppercase tracking-wider text-[#9CA3AF]">DECISION NOTES</label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Reason for decision..."
                 rows={3}
-                className="bg-background border border-outline-variant text-on-background font-body-sm text-body-sm px-3 py-2 rounded focus:border-primary outline-none transition-colors resize-none"
+                className="bg-black/30 border border-white/15 text-[#F5F5F5] text-xs px-3.5 py-2.5 rounded-xl focus:border-primary outline-none transition-colors resize-none leading-relaxed"
               />
             </div>
 
             {actionError && (
-              <p className="text-error font-body-sm text-body-sm">{actionError}</p>
+              <p className="text-red-400 font-mono text-xs">{actionError}</p>
             )}
 
-            <h3 className="font-label-caps text-label-caps text-error text-center animate-pulse">HUMAN REVIEW REQUIRED</h3>
+            <div className="font-mono text-[11px] font-semibold text-red-400 text-center uppercase tracking-wider animate-pulse pt-1">
+              HUMAN REVIEW REQUIRED
+            </div>
 
             <button
               onClick={handleReject}
               disabled={submitting}
-              className="w-full bg-error hover:bg-error/90 text-on-error font-label-caps text-label-caps py-4 rounded-lg flex justify-center items-center gap-2 transition-colors disabled:opacity-50"
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-mono text-xs font-bold tracking-wider py-3.5 rounded-full flex justify-center items-center gap-2 shadow-[0_0_18px_rgba(239,68,68,0.4)] transition-all disabled:opacity-50 min-h-[44px]"
             >
-              <span className="material-symbols-outlined">cancel</span>
-              <span className="font-bold">{submitting ? 'PROCESSING...' : 'REJECT PAYMENT'}</span>
+              <span className="material-symbols-outlined text-base">cancel</span>
+              <span>{submitting ? 'PROCESSING...' : 'REJECT PAYMENT'}</span>
             </button>
 
             <button
               onClick={() => navigate(`/cases/${caseId}`)}
               disabled={submitting}
-              className="w-full bg-transparent border border-outline hover:bg-surface-container-highest text-on-background font-body-md py-3 rounded-lg flex justify-center items-center gap-2 transition-colors"
+              className="w-full bg-white/[0.03] border border-white/15 hover:bg-white/[0.08] text-[#E5E7EB] font-mono text-xs font-semibold tracking-wider py-3 rounded-full flex justify-center items-center gap-2 transition-all min-h-[44px]"
             >
               <span className="material-symbols-outlined text-sm">pause</span>
-              KEEP ON HOLD
+              <span>KEEP ON HOLD</span>
             </button>
 
             <button
               onClick={handleApprove}
               disabled={submitting}
-              className="w-full bg-transparent text-on-surface-variant hover:text-on-background font-body-sm py-2 flex justify-center items-center gap-2 transition-colors opacity-60 hover:opacity-100 disabled:opacity-30"
+              className="w-full bg-transparent text-[#9CA3AF] hover:text-[#F5F5F5] font-mono text-xs font-semibold py-2 flex justify-center items-center gap-2 transition-colors opacity-70 hover:opacity-100 disabled:opacity-30"
             >
-              <span className="material-symbols-outlined text-sm">check_circle</span>
-              APPROVE RELEASE
+              <span className="material-symbols-outlined text-sm text-emerald-400">check_circle</span>
+              <span>APPROVE RELEASE</span>
             </button>
           </div>
         )}
